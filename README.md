@@ -1,305 +1,72 @@
-# Policy-Aware RAG System for Ads & Content Moderation Guidance
+# Policy-Aware RAG System for Ads & Content Moderation
 
-A production-ready Retrieval-Augmented Generation (RAG) system that provides policy explanation and guidance for Google Ads content moderation using semantic search and local LLM inference.
+A production-ready RAG system that answers Google Ads policy questions using hybrid search, local LLM inference, and citation-backed responses — with explicit refusal logic to prevent hallucinations.
 
-## Overview
+## Tech Stack
 
-This system answers policy questions by:
+| Layer | Tools |
+|---|---|
+| Vector Search | Weaviate 1.23 (semantic) + PostgreSQL 15 (metadata filtering) |
+| Embeddings | all-MiniLM-L6-v2 (384-dim) |
+| LLM | Ollama + Qwen3 4B (~2.5GB, local inference) |
+| API | FastAPI + Uvicorn |
+| Orchestration | LangChain |
+| Infrastructure | Docker Compose (4-service stack) |
 
-1. **Retrieving** relevant policy sections using hybrid search (semantic + metadata)
-2. **Generating** grounded answers with an LLM
-3. **Citing** sources with direct links to policy documents
-4. **Refusing** to answer when sources are insufficient (hallucination prevention)
-
-## Key Features
-
-- **Hybrid Retrieval**: Vector search (Weaviate) + SQL filtering (PostgreSQL)
-- **Citation-Backed Answers**: Every response includes source policy links
-- **Refusal Logic**: Explicitly refuses when policies don't cover the question
-- **Section-Specific URLs**: Automatic extraction of policy section URLs (no hardcoding)
-- **Interactive UI**: Web interface for easy querying
-- **Fully Dockerized**: One command deploys entire stack
-- **90 Tests**: Comprehensive test coverage (100% passing)
-
-
-## Quick Start
-
-### Option 1: Docker (Recommended)
-
-```bash
-# 1. Copy environment template
-cp .env.docker .env
-
-# 2. Start all services (PostgreSQL, Weaviate, Ollama, FastAPI)
-docker-compose up -d
-
-# 3. Monitor startup (first run takes 5-10 minutes to download model)
-docker-compose logs -f fastapi
-
-# 4. Access the application
-open http://localhost:8000
+## How It Works
+```
+Query → Hybrid retrieval (Weaviate + PostgreSQL) → Qwen3 generation → Citation extraction → Response
+                                                         ↓
+                                           Refusal if sources insufficient
 ```
 
-### Option 2: Local Development
+**Key design decisions:**
+- Hybrid retrieval: vector similarity + SQL metadata filters for precision
+- Refusal logic: explicitly declines when retrieved chunks don't support an answer
+- Section-specific URLs auto-extracted from policy docs (no hardcoding)
+- Full audit trail: every response includes chunk IDs, policy paths, and source URLs
 
-```bash
-# 1. Install dependencies
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# 2. Start services
-# PostgreSQL (must be running on localhost:5432)
-# Weaviate: docker-compose up -d weaviate
-# Ollama: ollama serve
-
-# 3. Initialize database
-python -c "from db.session import init_db; init_db()"
-
-# 4. Run ingestion pipeline
-python -m ingestion.load_docs   # Download policy documents
-python -m ingestion.chunk       # Chunk into sections
-python -m ingestion.embed       # Generate embeddings & index
-
-# 5. Start API server
-uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
-
-# 6. Access the application
-open http://localhost:8000
-```
-
-## Component Documentation
-
-Detailed documentation for each component:
-
-### Core Components
-
-- **[`ingestion/`](ingestion/README.md)** - Data pipeline (download → chunk → embed)
-- **[`app/`](app/README.md)** - RAG core logic (retrieval, generation, citations)
-- **[`api/`](api/README.md)** - REST API and web interface
-- **[`db/`](db/README.md)** - PostgreSQL schema and models
-- **[`tests/`](tests/README.md)** - Test suite (90 tests, 100% passing)
-
-### Deployment
-
-- **[`DOCKER.md`](DOCKER.md)** - Docker quick reference
-- **README Step 8** (below) - Full Docker documentation
-
-## API Usage
-
-### Query Endpoint
-
-```bash
-curl -X POST http://localhost:8000/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "Can I advertise alcohol?",
-    "limit": 5
-  }'
-```
-
-**Response:**
-
+## Sample Response
 ```json
 {
   "answer": "Alcohol advertising is allowed but requires certification...",
   "refused": false,
-  "citations": [
-    {
-      "chunk_id": "google_ads_overview_chunk_005",
-      "policy_path": "Prohibited Content > Alcohol",
-      "doc_id": "google_ads_overview",
-      "doc_url": "https://support.google.com/adspolicy/answer/6012382"
-    }
-  ],
+  "citations": [{
+    "chunk_id": "google_ads_overview_chunk_005",
+    "policy_path": "Prohibited Content > Alcohol",
+    "doc_url": "https://support.google.com/adspolicy/answer/6012382"
+  }],
   "latency_ms": 2543.2,
   "num_tokens_generated": 87
 }
 ```
 
-### Health Check
+Refusal example (by design): "What products are allowed to advertise?" — policies describe restrictions not allowances, so the system refuses rather than guessing.
 
-```bash
-curl http://localhost:8000/health
-```
-
-### Interactive Documentation
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-## Testing
-
-```bash
-# Run all 90 tests
-pytest tests/ -v
-
-# Run specific component tests
-pytest tests/test_api_endpoints.py -v            # API tests (14)
-pytest tests/test_generation_guardrails.py -v    # Generation tests (5)
-pytest tests/test_retrieval_core.py -v           # Core retrieval tests (16)
-pytest tests/test_retrieval_advanced.py -v       # Advanced retrieval tests (11)
-pytest tests/test_retrieval_edge_cases.py -v     # Edge case tests (12)
-pytest tests/test_retrieval_integration.py -v    # Integration tests (10)
-
-# With coverage
-pytest tests/ --cov --cov-report=html
-open htmlcov/index.html
-```
-
-**Test Results:** All 90 tests passing (100%)
-
-## Technology Stack
-
-| Component            | Technology                               | Purpose                     |
-| -------------------- | ---------------------------------------- | --------------------------- |
-| **Database**         | PostgreSQL 15                            | Structured metadata storage |
-| **Vector DB**        | Weaviate 1.23                            | Semantic search             |
-| **Embeddings**       | sentence-transformers (all-MiniLM-L6-v2) | Text vectorization          |
-| **LLM**              | Ollama + Qwen3 (4B)                      | Answer generation           |
-| **API**              | FastAPI + Uvicorn                        | REST API server             |
-| **Frontend**         | Vanilla HTML/CSS/JS                      | Interactive web UI          |
-| **ORM**              | SQLAlchemy                               | Database interactions       |
-| **Orchestration**    | LangChain                                | RAG pipeline                |
-| **Containerization** | Docker + Docker Compose                  | Deployment                  |
-
-## System Stats
-
-- **Documents**: ~5-10 policy documents
-- **Chunks**: ~67 indexed sections
-- **Vector Dimensions**: 384 (all-MiniLM-L6-v2)
-- **Query Latency**: 2-5 seconds
-- **Model Size**: Qwen3 4B (~2.5GB)
-
-## Example Queries
-
-**Successful queries:**
-
-- "Can I advertise alcohol?"
-- "What are the gambling advertising rules?"
-- "Are financial products restricted?"
-- "What content is prohibited?"
-
-**Refusal examples (by design):**
-
-- "What products are allowed to advertise?" (inverse question - policies describe restrictions, not allowances)
-- "What is the meaning of life?" (out of scope)
-
-## Project Structure
-
-```
-.
-├── api/                # REST API & web interface
-│   ├── main.py        # FastAPI app
-│   ├── models.py      # Pydantic schemas
-│   └── static/        # Web UI (HTML/CSS/JS)
-│
-├── app/                # Core RAG logic
-│   ├── retrieval.py   # Hybrid search
-│   ├── generation.py  # LLM generation
-│   ├── citations.py   # Citation extraction
-│   └── schemas.py     # Response models
-│
-├── ingestion/          # Data pipeline
-│   ├── load_docs.py   # Document scraper
-│   ├── chunk.py       # Text chunking
-│   └── embed.py       # Embedding generation
-│
-├── db/                 # Database layer
-│   ├── models.py      # SQLAlchemy models
-│   └── session.py     # Connection management
-│
-├── tests/              # Test suite (90 tests)
-│   ├── test_api_endpoints.py            # API tests (14)
-│   ├── test_retrieval_core.py           # Core retrieval (16)
-│   ├── test_retrieval_advanced.py       # Advanced retrieval (11)
-│   ├── test_retrieval_edge_cases.py     # Edge cases (12)
-│   ├── test_retrieval_integration.py    # Integration (10)
-│   ├── test_generation_guardrails.py    # Generation (5)
-│   ├── test_db_constraints.py           # Database (3)
-│   ├── test_embedding_coverage.py       # Embeddings (3)
-│   └── ... (6 more files)
-│
-├── data/               # Generated data (gitignored)
-│   ├── metadata.json  # Document metadata
-│   └── chunks.json    # Processed chunks
-│
-├── Dockerfile          # FastAPI container
-├── docker-compose.yml  # Multi-service orchestration
-├── requirements.txt    # Python dependencies
-└── README.md          # This file
-```
-
-### Quick Start
-
+## Quick Start
 ```bash
 cp .env.docker .env
 docker-compose up -d
-docker-compose logs -f fastapi
+# First run: 5-10 min to pull Qwen3 4B
+# App at http://localhost:8000 | Docs at http://localhost:8000/docs
 ```
 
-### Architecture
+Startup sequence is fully automated: waits for all services, pulls model if missing, runs ingestion pipeline, then starts the server.
 
-```
-Docker Compose Stack:
-├─ PostgreSQL (5432)   - Persistent database
-├─ Weaviate (8080)     - Vector search
-├─ Ollama (11434)      - LLM inference
-└─ FastAPI (8000)      - API & web UI
+## Tests
 
-Networks: policy-rag-network (bridge)
-Volumes: postgres_data, weaviate_data, ollama_data
-```
-
-### Services
-
-**PostgreSQL** (postgres:15-alpine)
-
-- Stores chunks and metadata
-- Health check: `pg_isready`
-
-**Weaviate** (semitechnologies/weaviate:1.23.0)
-
-- Vector similarity search
-- Health check: `/.well-known/ready`
-
-**Ollama** (ollama/ollama:latest)
-
-- Local LLM inference (qwen3:4b)
-- Auto-downloads model on startup
-- Health check: `/api/tags`
-
-**FastAPI** (custom build)
-
-- REST API and web interface
-- Auto-runs ingestion pipeline
-- Health check: `/health`
-
-### Startup Flow
-
-The `docker-entrypoint.sh` script automates:
-
-1. Wait for PostgreSQL, Weaviate, Ollama
-2. Pull Ollama model if needed
-3. Initialize database tables
-4. Download policy documents (if needed)
-5. Chunk documents (if needed)
-6. Generate embeddings (if needed)
-7. Start Uvicorn server
-
-### Configuration
-
-Environment variables in `.env`:
-
+90 tests, 100% passing across retrieval, generation guardrails, API, edge cases, and integration.
 ```bash
-# Database
-POSTGRES_DB=policy_rag
-POSTGRES_USER=policy_user
-POSTGRES_PASSWORD=policy_pass
+pytest tests/ -v
+pytest tests/ --cov --cov-report=html
+```
 
-# LLM
-OLLAMA_MODEL=qwen3:4b
-
-# Application
-LOG_LEVEL=INFO
+## Project Structure
+```
+├── ingestion/       # load_docs → chunk → embed pipeline
+├── app/             # retrieval, generation, citations, schemas
+├── api/             # FastAPI routes + vanilla HTML/CSS/JS UI
+├── db/              # SQLAlchemy models + session
+├── tests/           # 90 tests across 9 files
+└── docker-compose.yml
 ```
