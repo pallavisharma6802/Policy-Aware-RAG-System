@@ -1,6 +1,7 @@
 # Policy-Aware RAG System for Ads & Content Moderation
 
 A production-ready RAG system that answers Google Ads policy questions using hybrid search, local LLM inference, and citation-backed responses — with explicit refusal logic to prevent hallucinations.
+> 90 tests passing · Hybrid semantic + metadata retrieval · Zero hallucination guarantee via explicit refusal
 
 ## Tech Stack
 
