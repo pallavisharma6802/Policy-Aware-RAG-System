@@ -1,0 +1,802 @@
+[
+  {
+    "id": "eval_001",
+    "question": "Can I include a phone number directly in my Google ad text?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Entering a phone number in ad text is not allowed under Google Ads editorial policies. Use the dedicated call extension instead.",
+    "source_policy_paths": ["Phone number in ad text"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_002",
+    "question": "Are blurry or sideways images allowed in Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Images that are sideways, upside down, blurry, unclear, or unrecognizable, or that do not take up the entire space of the chosen image size are not allowed.",
+    "source_policy_paths": ["Image quality"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_003",
+    "question": "What are the capitalization rules for Google Ads copy?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Capitalization that is not used correctly or for its intended purpose is not allowed in Google Ads. You cannot use random or excessive capitalization for stylistic effect.",
+    "source_policy_paths": ["Capitalization"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_004",
+    "question": "Can I use repeated punctuation like '!!!' or '???' in my ad headlines?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Punctuation or symbols that are not used correctly or for their intended purpose are not allowed. This includes punctuation or symbols repeated consecutively.",
+    "source_policy_paths": ["Punctuation and symbols"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_005",
+    "question": "Am I allowed to repeat the same word multiple times within a single ad asset?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Non-standard, gimmicky, or unnecessary repetition of names, words, or phrases is not allowed. Asset text that repeats words or phrases within the same asset or across assets is prohibited.",
+    "source_policy_paths": ["Repetition"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_006",
+    "question": "What video quality standards must my Google video ads meet?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Videos with illegible text, poor sound quality, or blurry, unclear, or unrecognizable visuals are not allowed in Google Ads.",
+    "source_policy_paths": ["Video quality"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_007",
+    "question": "Does my ad need to identify the business or product being promoted?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. Ads or destinations that do not name the product, service, or entity they are promoting are not allowed under the Unidentified Business policy.",
+    "source_policy_paths": ["Unidentified business"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_008",
+    "question": "Must the business name in my ad match my actual business name?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. The business name field must display the actual name by which the business is known to customers. Providing any other name is not allowed.",
+    "source_policy_paths": ["Business name requirements"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_009",
+    "question": "Can I run a Google Ad that contains spelling mistakes or grammatical errors?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads or assets that do not use commonly accepted spelling or grammar, or that are incomprehensible or do not make sense, are not allowed.",
+    "source_policy_paths": ["Style and spelling"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_010",
+    "question": "Can I add extra spaces between words for stylistic effect in my ad copy?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Omitting a space or adding extra spaces, and excessive or gimmicky use of spacing, are not allowed under the Unacceptable Spacing policy.",
+    "source_policy_paths": ["Unacceptable spacing"],
+    "category": "editorial",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_011",
+    "question": "Can I use an ad feature in a way that it was not originally designed for?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads or assets that do not use the features of the ad unit for their intended purpose are not allowed under the Misuse of Ad Features policy.",
+    "source_policy_paths": ["Misuse of ad features"],
+    "category": "editorial",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_012",
+    "question": "What is considered a clickbait ad under Google Ads policy?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Ads that use clickbait tactics or sensationalist text or imagery to drive traffic are not allowed. This includes ads that use negative life events such as death, accidents, illness, arrests, or bankruptcies to attract clicks.",
+    "source_policy_paths": ["Clickbait ads"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_013",
+    "question": "Can I advertise a product in my ad that is not actually available on my landing page?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Promising products, services, or promotional offers in the ad that are unavailable or are not easily found from the destination is not allowed under the Unavailable Offers policy.",
+    "source_policy_paths": ["Unavailable offers"],
+    "category": "misrepresentation",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_014",
+    "question": "Are ads that use fake button-like elements to deceive users allowed?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Misleading ad design that makes it difficult for users to understand they are interacting with an ad is not allowed. This includes non-functional elements that resemble buttons or input fields.",
+    "source_policy_paths": ["Misleading ad design"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_015",
+    "question": "What pricing information am I required to disclose clearly in Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "You must clearly and conspicuously disclose the payment model and the full expense that a user will bear both before and after purchase. Failure to do so, or employing dishonest pricing practices, is not allowed.",
+    "source_policy_paths": ["Dishonest pricing practices"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_016",
+    "question": "Can I use deepfake or manipulated media in my Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Manipulating media to deceive, defraud, or mislead others is not allowed under the Manipulated Media policy.",
+    "source_policy_paths": ["Manipulated media"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_017",
+    "question": "Can I claim my product guarantees a specific dramatic result even if it is theoretically possible?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Making inaccurate claims or claims that entice users with an improbable result as the likely outcome is not allowed, even if the result is technically possible.",
+    "source_policy_paths": ["Unreliable claims"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_018",
+    "question": "What is coordinated deceptive practice in the context of Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Coordinating with other sites or accounts and concealing or misrepresenting your identity or material details about yourself, where your content relates to political, social, economic, or civic issues, is not allowed.",
+    "source_policy_paths": ["Coordinated deceptive practices"],
+    "category": "misrepresentation",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_019",
+    "question": "Can I run an ad that links to a landing page about a completely different topic than the ad?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Promotions that are not relevant to the destination are not allowed under the Unclear Relevance policy.",
+    "source_policy_paths": ["Unclear relevance"],
+    "category": "misrepresentation",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_020",
+    "question": "Can I hide important information about my business in my ad campaign?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Scamming users by hiding or misrepresenting information about your business, products, or services is not allowed. This falls under Unacceptable Business Practices.",
+    "source_policy_paths": ["Unacceptable business practices"],
+    "category": "misrepresentation",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_021",
+    "question": "Can I mislead users about my professional qualifications in a Google Ad?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Making misleading statements, obscuring, or omitting material information about your identity, affiliations, or qualifications is not allowed under the Misleading Representation policy.",
+    "source_policy_paths": ["Misleading representation"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_022",
+    "question": "Can I advertise counterfeit goods or replica products on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Google Ads prohibits the sale or promotion for sale of counterfeit goods. Counterfeit goods contain trademarks identical or substantially indistinguishable from another brand's trademark.",
+    "source_policy_paths": ["Prohibited content > Counterfeit goods"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_023",
+    "question": "What happens if I advertise content that promotes racial discrimination?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Content that incites hatred against or promotes discrimination of individuals or groups based on race or ethnicity is not allowed under the Dangerous or Derogatory Content policy. Such ads will be disapproved.",
+    "source_policy_paths": ["Dangerous or derogatory content"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_024",
+    "question": "Are ads for tobacco products allowed on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads for tobacco or any products containing tobacco are not allowed. This also includes ads for products that form a component part of a tobacco product.",
+    "source_policy_paths": ["Tobacco"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_025",
+    "question": "Are ads for explosives or explosive materials permitted on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads for products designed to explode and cause damage to people or property are not allowed. Ads for instructional content about assembling or acquiring explosives are also prohibited.",
+    "source_policy_paths": ["Explosives"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_026",
+    "question": "Can I advertise products recalled for safety risks on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads for products that carry a proven and unresolved risk of death or grievous bodily harm and that have been subject to a consumer advisory or product recall are not allowed.",
+    "source_policy_paths": ["Consumer advisories"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_027",
+    "question": "Are ads that promote cruelty to animals allowed on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Content that promotes cruelty or gratuitous violence towards animals, or that may be interpreted as trading in or selling products derived from threatened or endangered species, is not allowed.",
+    "source_policy_paths": ["Animal cruelty"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_028",
+    "question": "Can I advertise child sexual abuse material or related content?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Absolutely not. Content promoting or facilitating child sexual abuse or exploitation, including child sexual abuse material or content that condones it, is completely prohibited.",
+    "source_policy_paths": ["Child sexual abuse and exploitation"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_029",
+    "question": "What firearm accessories ARE allowed to be advertised on Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Ads for gun parts and associated items that increase the safety of a gun are allowed. However, ads for functional devices that appear to discharge a projectile at high velocity and other weapons components may be restricted or prohibited.",
+    "source_policy_paths": ["Guns, gun parts, and related products"],
+    "category": "prohibited",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_030",
+    "question": "Can I advertise sodium nitrite products with a high concentration?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "No. Products with a concentration of more than 10% sodium nitrite are not allowed. Only sodium nitrite products at 10% or below may be advertised.",
+    "source_policy_paths": ["Sodium Nitrite"],
+    "category": "prohibited",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_031",
+    "question": "Can I advertise topical hemp-derived CBD products on Google Ads?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "Yes, but only under strict conditions. Ads for topical, hemp-derived CBD products with THC content of 0.3% or less are allowed, but advertisers must apply to advertise these products and may only target California, Colorado, and Puerto Rico.",
+    "source_policy_paths": ["Recreational drugs"],
+    "category": "prohibited",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_032",
+    "question": "Are ads for hacked political materials allowed on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Ads that directly facilitate or advertise access to hacked material related to political entities within scope of Google's Election Ads policy are not allowed.",
+    "source_policy_paths": ["Hacked political materials"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_033",
+    "question": "Can I advertise alcohol products on Google Ads?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "Alcohol advertising is allowed but restricted. Google abides by local alcohol laws and industry standards and doesn't allow certain kinds of alcohol-related advertising. Advertisers must comply with local laws and industry standards, including age restrictions.",
+    "source_policy_paths": ["Restricted content and features > Alcohol"],
+    "category": "restricted",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_034",
+    "question": "What are the rules for advertising gambling services on Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Gambling advertising is restricted. Google supports responsible gambling advertising and abides by local gambling laws and industry standards. Certain types of gambling-related advertising are not allowed.",
+    "source_policy_paths": ["Restricted content and features > Gambling and games"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_035",
+    "question": "Can I freely advertise prescription medications on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Healthcare and medicine advertising is restricted. Advertisers are expected to follow applicable advertising regulations for healthcare and medicine, and must meet Google's specific requirements for this category.",
+    "source_policy_paths": ["Restricted content and features > Healthcare and medicines"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_036",
+    "question": "Are there special requirements for advertising financial products like loans on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. Financial product and service advertising is restricted. Google's policies are designed to give users adequate information to make informed financial decisions. Advertisers must comply with specific requirements for this category.",
+    "source_policy_paths": ["Restricted content and features > Financial products and services"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_037",
+    "question": "Can I advertise cryptocurrency exchange services on Google Ads?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "Cryptocurrency advertising is allowed but restricted due to complex and evolving regulations. Only certain cryptocurrency-related products are permitted, and advertisers must be Google-certified to run such ads.",
+    "source_policy_paths": ["Restricted content and features > Cryptocurrencies and related products"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_038",
+    "question": "Are there restrictions on political ads on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. Political content is restricted. All political ads and destinations must comply with local campaign and election laws for any area they target.",
+    "source_policy_paths": ["Restricted content and features > Political content"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_039",
+    "question": "Can I use copyrighted content in my Google Ads without authorization?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Google abides by local copyright laws and does not allow ads that are unauthorized to use copyrighted content.",
+    "source_policy_paths": ["Restricted content and features > Copyrights"],
+    "category": "restricted",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_040",
+    "question": "Are there additional advertising restrictions that apply specifically to children and teens?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. Google has specific child and teen ads policies, and multiple other Google Ads policies (including those for alcohol, gambling, healthcare) apply with additional restrictions when ads could be seen by children or teens.",
+    "source_policy_paths": ["Restricted content and features > Ad protections for children and teens"],
+    "category": "restricted",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_041",
+    "question": "How does Google enforce its advertising policies?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Google uses a combination of Google AI and human evaluation to ensure ads comply with policies. Enforcement technologies use AI modeled on human reviewers' decisions. More complex, nuanced, or severe cases are reviewed by specially-trained experts.",
+    "source_policy_paths": ["Overview of our policies and how we enforce them"],
+    "category": "overview",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_042",
+    "question": "What happens to my account if I repeatedly violate Google Ads policies?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Google may disapprove violating ads so they don't serve. For repeat or egregious violations, Google may suspend the advertiser's account. Google takes repeat violations seriously and has a strike system for repeat offenders.",
+    "source_policy_paths": ["Overview of our policies and how we enforce them"],
+    "category": "overview",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_043",
+    "question": "Can I appeal a disapproved Google Ad?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "Yes. If an ad is disapproved, you can fix that ad or appeal the decision. You can also appeal an account suspension decision.",
+    "source_policy_paths": ["Overview of our policies and how we enforce them"],
+    "category": "overview",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_044",
+    "question": "What are the four broad policy categories that Google Ads covers?",
+    "question_type": "list",
+    "expected_refused": false,
+    "reference_answer": "The four broad areas covered by Google Ads policies are: (1) Prohibited content, (2) Prohibited practices, (3) Restricted content and features, and (4) Editorial and technical requirements.",
+    "source_policy_paths": ["Overview of our policies and how we enforce them"],
+    "category": "overview",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_045",
+    "question": "What is considered abusing the Google ad network?",
+    "question_type": "list",
+    "expected_refused": false,
+    "reference_answer": "Abusing the ad network includes: promoting content containing malware, cloaking or hiding true destinations, traffic arbitrage (promoting destinations solely to show more ads), bridge pages designed only to redirect users, gaming policy review systems, and ads solely designed to gain social network endorsements.",
+    "source_policy_paths": ["Prohibited practices > Abusing the ad network"],
+    "category": "overview",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_046",
+    "question": "What user data must be handled with particular care in Google Ads?",
+    "question_type": "list",
+    "expected_refused": false,
+    "reference_answer": "Sensitive user information that must be handled with care includes: full name, email address, mailing address, phone number, national identity numbers, birth date, financial status, political affiliation, sexual orientation, race or ethnicity, and religion.",
+    "source_policy_paths": ["Prohibited practices > Data collection and use"],
+    "category": "overview",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_047",
+    "question": "What is cloaking and is it allowed in Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Cloaking refers to using techniques to hide the true destination that users are directed to. It is not allowed and is considered an example of abusing the Google ad network.",
+    "source_policy_paths": ["Prohibited practices > Abusing the ad network"],
+    "category": "overview",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_048",
+    "question": "What is limited ad serving in Google Ads?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Limited ad serving is a mechanism to protect the integrity of the Google Ads ecosystem by restricting impressions for ads that have a higher potential of causing abuse or a poor experience for users.",
+    "source_policy_paths": ["Restricted content and features > Limited ad serving"],
+    "category": "overview",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_049",
+    "question": "Can I use personalized advertising targeting without any additional compliance requirements?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Additional policies apply when using personalized advertising, which includes remarketing and custom audiences. Advertisers must review the personalized ads data collection and use policies.",
+    "source_policy_paths": ["Prohibited practices > Data collection and use"],
+    "category": "overview",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_050",
+    "question": "What are the destination requirements for Google Ads landing pages?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "Ad destinations must offer unique value to users and be functional. Google wants consumers to have a good experience when they click on an ad.",
+    "source_policy_paths": ["Editorial and technical requirements > Destination requirements"],
+    "category": "overview",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_051",
+    "question": "Can I advertise content that promotes shocking or gruesome imagery?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Promotions containing violent language, gruesome or disgusting imagery, graphic images or accounts of physical trauma, or gratuitous displays of injury or death are not allowed under the Shocking Content policy.",
+    "source_policy_paths": ["Shocking content"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_052",
+    "question": "What is a sensitive event under Google Ads policy and how does it affect advertising?",
+    "question_type": "factual",
+    "expected_refused": false,
+    "reference_answer": "A sensitive event is an unforeseen event or development that creates significant risk to Google's ability to provide high quality, relevant information. During such events, Google reduces or blocks ads that could be perceived as taking advantage of the situation.",
+    "source_policy_paths": ["Sensitive events"],
+    "category": "prohibited",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_053",
+    "question": "Can I advertise other weapons besides guns, such as fighting knives?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "Knives designed or promoted for use as weapons to injure an opponent in sport, self-defense, or combat are not allowed. Similarly, any knives not primarily designed as tools but marketed as weapons are prohibited.",
+    "source_policy_paths": ["Other weapons"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_054",
+    "question": "Are ads that place adult content in family-friendly contexts allowed?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Content that is made to appear appropriate for a family audience but contains adult themes including sex, violence, vulgarity, or other adult content is not allowed.",
+    "source_policy_paths": ["Adult themes in family content"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_055",
+    "question": "Are sexually explicit ads allowed on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Text, image, audio, or video of graphic sexual acts intended to arouse is not allowed. Content promoting underage, non-consensual, or other illegal sexual themes is also strictly prohibited.",
+    "source_policy_paths": ["Sexually explicit content"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_056",
+    "question": "Can I advertise hacking software or services to artificially inflate website traffic?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Products or services designed to enable dishonest behavior are not allowed. This explicitly includes hacking software or instructions and services designed to artificially inflate ad or website traffic.",
+    "source_policy_paths": ["Prohibited content > Enabling dishonest behavior"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_057",
+    "question": "What is Facebook's alcohol advertising policy?",
+    "question_type": "refusal_cross_platform",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_058",
+    "question": "What are TikTok's rules for advertising financial products?",
+    "question_type": "refusal_cross_platform",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_059",
+    "question": "Does Instagram allow gambling advertisements?",
+    "question_type": "refusal_cross_platform",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_060",
+    "question": "What are Twitter's content moderation policies for political ads?",
+    "question_type": "refusal_cross_platform",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_061",
+    "question": "What is the weather forecast for tomorrow?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_062",
+    "question": "How do I cook pasta carbonara?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_063",
+    "question": "What is the best programming language to learn in 2025?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_064",
+    "question": "Can you explain the theory of relativity?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_065",
+    "question": "What products are unconditionally allowed to be advertised on Google?",
+    "question_type": "refusal_inverse",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_066",
+    "question": "List every type of content that is fully permitted with no restrictions on Google Ads.",
+    "question_type": "refusal_inverse",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_067",
+    "question": "What will guarantee my ad gets approved on Google Ads?",
+    "question_type": "refusal_inverse",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_068",
+    "question": "Can I advertise my business on Google?",
+    "question_type": "refusal_vague",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_069",
+    "question": "Is my ad compliant with Google policies?",
+    "question_type": "refusal_vague",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_070",
+    "question": "What should my ad look like?",
+    "question_type": "refusal_vague",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_071",
+    "question": "Is my cryptocurrency startup legally compliant?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_072",
+    "question": "What are Google Shopping product listing policies?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_073",
+    "question": "How does bidding work in Google Ads auctions?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_074",
+    "question": "How do I set a daily budget in Google Ads?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_075",
+    "question": "Can I advertise on Google Maps?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_076",
+    "question": "What is the treatment for type 2 diabetes?",
+    "question_type": "refusal_oos",
+    "expected_refused": true,
+    "reference_answer": null,
+    "source_policy_paths": [],
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_077",
+    "question": "Can I use another company's brand name in my Google Ad headline without them knowing?",
+    "question_type": "conditional",
+    "expected_refused": false,
+    "reference_answer": "Using another brand's trademark in ads requires authorization. Google abides by local copyright laws and does not allow ads unauthorized to use copyrighted or trademarked content. Advertisers may also be subject to trademark complaint policies.",
+    "source_policy_paths": ["Restricted content and features > Copyrights", "Prohibited content > Counterfeit goods"],
+    "category": "restricted",
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval_078",
+    "question": "What are the rules for advertising academic cheating services like essay mills?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Academic cheating services are explicitly listed as examples of products or services that enable dishonest behavior, which are not allowed under Google Ads policy.",
+    "source_policy_paths": ["Prohibited content > Enabling dishonest behavior"],
+    "category": "prohibited",
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval_079",
+    "question": "Can I advertise fake identity documents or passports on Google Ads?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Fake documents are explicitly listed as examples of products that enable dishonest behavior, which are not allowed under Google Ads policy.",
+    "source_policy_paths": ["Prohibited content > Enabling dishonest behavior"],
+    "category": "prohibited",
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval_080",
+    "question": "Are ads that misrepresent the advertiser's identity or impersonate another business allowed?",
+    "question_type": "yes_no",
+    "expected_refused": false,
+    "reference_answer": "No. Making misleading statements or omitting material information about your identity or affiliations is not allowed under the Misleading Representation and Unacceptable Business Practices policies.",
+    "source_policy_paths": ["Misleading representation", "Unacceptable business practices"],
+    "category": "misrepresentation",
+    "difficulty": "medium"
+  }
+]

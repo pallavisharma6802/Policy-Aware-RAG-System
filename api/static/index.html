@@ -1,376 +1,1219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Policy RAG System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policy-Aware RAG — Google Ads</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --blue:    #1a73e8;
+      --blue-dk: #1557b0;
+      --green:   #34a853;
+      --red:     #ea4335;
+      --amber:   #f9ab00;
+      --bg:      #f1f3f4;
+      --card:    #ffffff;
+      --border:  #dadce0;
+      --text:    #202124;
+      --sub:     #5f6368;
+      --radius:  12px;
+      --shadow:  0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
-            padding: 20px;
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    body {
+      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-        h1 {
-            color: #1a73e8;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
+    /* ── Header ── */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+      font-size: 16px;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
+    .status-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
 
-        input[type="text"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-        }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--sub);
+      background: var(--bg);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--sub);
+      flex-shrink: 0;
+    }
+    .dot.ok  { background: var(--green); }
+    .dot.err { background: var(--red);   }
+    .dot.warn{ background: var(--amber); }
 
-        input[type="text"]:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-        }
+    /* ── Tabs ── */
+    .tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      padding: 0 24px;
+      gap: 4px;
+    }
 
-        button {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
+    .tab-btn {
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--sub);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all .15s;
+      position: relative;
+      top: 1px;
+    }
+    .tab-btn:hover { color: var(--blue); }
+    .tab-btn.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
 
-        button:hover {
-            background: #1557b0;
-        }
+    /* ── Layout ── */
+    .page { display: none; padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+    .page.active { display: block; }
 
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
 
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .loading.active {
-            display: block;
-        }
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
 
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1a73e8;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sub);
+      margin-bottom: 6px;
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    textarea, select, input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--card);
+      transition: border-color .15s, box-shadow .15s;
+      resize: vertical;
+    }
+    textarea:focus, select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,115,232,.12);
+    }
+    textarea { min-height: 90px; }
 
-        .result {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            border-left: 4px solid #1a73e8;
-        }
+    .char-counter {
+      text-align: right;
+      font-size: 11px;
+      color: var(--sub);
+      margin-top: 4px;
+    }
+    .char-counter.warn { color: var(--red); }
 
-        .result.active {
-            display: block;
-        }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
-        .result.refused {
-            border-left-color: #ea4335;
-            background: #fef7f7;
-        }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-primary:hover { background: var(--blue-dk); }
+    .btn-primary:disabled { background: #c5cae9; cursor: not-allowed; }
 
-        .result h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #333;
-        }
+    .btn-outline {
+      background: white;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+    }
+    .btn-outline:hover { background: #e8f0fe; }
+    .btn-outline:disabled { color: var(--sub); border-color: var(--border); cursor: not-allowed; }
 
-        .answer {
-            margin-bottom: 20px;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
+    /* ── Loading ── */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #c5cae9;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        .citations {
-            margin-top: 20px;
-        }
+    .loading-overlay {
+      display: none;
+      padding: 20px;
+      align-items: center;
+      gap: 12px;
+      color: var(--sub);
+      font-size: 14px;
+    }
+    .loading-overlay.active { display: flex; }
 
-        .citations h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #555;
-        }
+    /* ── Answer block ── */
+    .answer-card {
+      display: none;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 20px;
+    }
+    .answer-card.active { display: block; }
 
-        .citation {
-            background: white;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            border: 1px solid #e0e0e0;
-        }
+    .answer-header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .answer-header.ok     { background: #e6f4ea; color: #137333; }
+    .answer-header.refused{ background: #fce8e6; color: #c5221f; }
 
-        .citation-path {
-            font-weight: 500;
-            color: #1a73e8;
-            margin-bottom: 4px;
-        }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-green  { background: #e6f4ea; color: #137333; }
+    .badge-red    { background: #fce8e6; color: #c5221f; }
+    .badge-blue   { background: #e8f0fe; color: #1a73e8; }
+    .badge-amber  { background: #fef7e0; color: #b06000; }
 
-        .citation-url {
-            font-size: 12px;
-            color: #666;
-        }
+    .answer-body {
+      padding: 20px;
+      background: var(--card);
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
 
-        .citation-url a {
-            color: #1a73e8;
-            text-decoration: none;
-        }
+    .refusal-reason {
+      padding: 12px 16px;
+      background: #fef7e0;
+      border-left: 4px solid var(--amber);
+      border-radius: 6px;
+      font-size: 13px;
+      color: #7a4f00;
+      margin-bottom: 16px;
+    }
 
-        .citation-url a:hover {
-            text-decoration: underline;
-        }
+    /* ── Metrics row ── */
+    .metrics-row {
+      display: flex;
+      gap: 16px;
+      padding: 14px 20px;
+      background: #f8f9fa;
+      border-top: 1px solid var(--border);
+    }
+    .metric-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+    .metric-chip strong { color: var(--text); }
 
-        .metrics {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            font-size: 13px;
-            color: #666;
-        }
+    /* ── Citations ── */
+    .citations-section { margin-top: 16px; }
+    .citations-title { font-size: 13px; font-weight: 600; color: var(--sub); margin-bottom: 10px; }
 
-        .metric {
-            display: flex;
-            gap: 5px;
-        }
+    .citation-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .citation-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .citation-header:hover { background: #f8f9fa; }
 
-        .metric-label {
-            font-weight: 500;
-        }
+    .citation-index {
+      width: 22px; height: 22px;
+      background: var(--blue);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
 
-        .refusal-reason {
-            padding: 15px;
-            background: #fff3e0;
-            border-radius: 4px;
-            color: #e65100;
-            margin-bottom: 15px;
-        }
-    </style>
+    .citation-meta { flex: 1; min-width: 0; }
+    .citation-path {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .citation-url {
+      font-size: 11px;
+      color: var(--blue);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .citation-url:hover { text-decoration: underline; }
+
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+    .score-bar-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width .4s ease;
+    }
+    .score-label { font-size: 11px; color: var(--sub); white-space: nowrap; }
+
+    .citation-expand-btn {
+      font-size: 11px;
+      color: var(--sub);
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .citation-expand-btn:hover { color: var(--blue); }
+
+    .citation-chunk {
+      display: none;
+      padding: 12px 16px;
+      background: #f8f9fa;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.7;
+      font-family: 'Roboto Mono', monospace;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .citation-chunk.open { display: block; }
+
+    /* ── Dashboard ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metric-card .label { font-size: 12px; color: var(--sub); font-weight: 500; }
+    .metric-card .value { font-size: 28px; font-weight: 700; color: var(--text); }
+    .metric-card .unit  { font-size: 12px; color: var(--sub); }
+    .metric-card .value.blue  { color: var(--blue); }
+    .metric-card .value.green { color: var(--green); }
+    .metric-card .value.amber { color: var(--amber); }
+    .metric-card .value.red   { color: var(--red); }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .chart-wrap { position: relative; height: 220px; }
+
+    /* ── History table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #f8f9fa;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--sub);
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f0f0f0;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8f9fa; }
+    .td-query { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .td-time  { white-space: nowrap; color: var(--sub); font-size: 12px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--sub);
+      font-size: 14px;
+    }
+    .empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+
+    /* ── Eval tab ── */
+    .eval-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .eval-stat {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .eval-stat .ev { font-size: 24px; font-weight: 700; color: var(--blue); }
+    .eval-stat .el { font-size: 12px; color: var(--sub); margin-top: 4px; }
+
+    .progress-bar-wrap {
+      background: var(--border);
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 6px;
+      transition: width .3s ease;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .result-metric {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .result-metric .rm-label { font-size: 12px; color: var(--sub); margin-bottom: 8px; font-weight: 500; }
+    .result-metric .rm-row   { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .result-metric .rm-row:last-child { border-bottom: none; }
+    .result-metric .rm-row .rk { color: var(--sub); }
+    .result-metric .rm-row .rv { font-weight: 600; color: var(--text); }
+    .rv.good { color: var(--green); }
+    .rv.warn { color: var(--amber); }
+    .rv.bad  { color: var(--red);   }
+
+    .eval-log {
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--sub);
+      background: #f8f9fa;
+      border-radius: 6px;
+      padding: 12px;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    /* ── Per-query results table ── */
+    .pq-pass { color: var(--green); }
+    .pq-fail { color: var(--red);   }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .metrics-grid  { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid   { grid-template-columns: 1fr; }
+      .eval-stat-row { grid-template-columns: 1fr; }
+      .results-grid  { grid-template-columns: 1fr; }
+      .form-row      { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Policy-Aware RAG System</h1>
-        <p class="subtitle">Get accurate, cited answers about Google Ads policy compliance</p>
 
-        <form id="queryForm">
-            <div class="form-group">
-                <label for="query">Your Question</label>
-                <textarea 
-                    id="query" 
-                    name="query" 
-                    placeholder="Ask about Google Ads policies..."
-                    required
-                    maxlength="500"
-                ></textarea>
-            </div>
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚖</div>
+    Policy RAG · Google Ads
+  </div>
+  <div class="status-bar" id="statusBar">
+    <div class="status-pill"><div class="dot" id="dotDB"></div><span id="lblDB">DB</span></div>
+    <div class="status-pill"><div class="dot" id="dotVDB"></div><span id="lblVDB">Vector</span></div>
+    <div class="status-pill"><div class="dot" id="dotLLM"></div><span id="lblLLM">LLM</span></div>
+  </div>
+</header>
 
-            <div class="form-group">
-                <label for="limit">Number of Sources</label>
-                <select id="limit" name="limit">
-                    <option value="3">Top 3 results</option>
-                    <option value="5" selected>Top 5 results</option>
-                    <option value="10">Top 10 results</option>
-                </select>
-            </div>
+<!-- ── Tabs ───────────────────────────────────────────────────────────────── -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="query">🔍 Query</button>
+  <button class="tab-btn" data-tab="dashboard">📊 Dashboard</button>
+  <button class="tab-btn" data-tab="evaluation">🧪 Evaluation</button>
+</div>
 
-            <button type="submit" id="submitBtn">Ask Question</button>
-        </form>
+<!-- ═══════════════════════ QUERY TAB ════════════════════════════════════════ -->
+<div class="page active" id="tab-query">
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Processing your question...</p>
+  <div class="card">
+    <div class="card-title">📋 Ask a Policy Question</div>
+    <form id="queryForm">
+      <div class="form-group">
+        <label for="q">Question</label>
+        <textarea id="q" name="query" maxlength="500"
+          placeholder="e.g. Can I advertise alcohol? Are gambling ads allowed? What are the rules for crypto ads?"></textarea>
+        <div class="char-counter" id="charCounter">0 / 500</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label for="limit">Sources to retrieve</label>
+          <select id="limit" name="limit">
+            <option value="3">Top 3</option>
+            <option value="5" selected>Top 5</option>
+            <option value="10">Top 10</option>
+          </select>
         </div>
-
-        <div class="result" id="result">
-            <h2>Response</h2>
-            <div id="resultContent"></div>
+        <div class="form-group" style="margin-bottom:0">
+          <label for="region">Region</label>
+          <select id="region" name="region">
+            <option value="">Any</option>
+            <option value="global">Global</option>
+            <option value="us">US</option>
+            <option value="eu">EU</option>
+            <option value="uk">UK</option>
+          </select>
         </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label for="content_type">Content type</label>
+          <select id="content_type" name="content_type">
+            <option value="">Any</option>
+            <option value="general">General</option>
+            <option value="ad_text">Ad Text</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="landing_page">Landing Page</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <button type="submit" class="btn btn-primary" id="submitBtn">Ask Question</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <span>Searching policy corpus and generating answer…</span>
+  </div>
+
+  <!-- Answer -->
+  <div class="answer-card" id="answerCard">
+    <div class="answer-header" id="answerHeader"></div>
+    <div class="answer-body" id="answerBody"></div>
+    <div class="metrics-row" id="metricsRow"></div>
+    <div style="padding:0 20px 16px">
+      <div class="citations-section" id="citationsSection"></div>
+    </div>
+  </div>
+
+  <!-- Example queries -->
+  <div class="card">
+    <div class="card-title">💡 Try these questions</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('Can I advertise alcohol on Google Ads?')">Can I advertise alcohol?</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('What are the rules for gambling advertisements?')">Gambling ads rules</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('Are cryptocurrency ads allowed on Google?')">Crypto ads policy</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('Can I use clickbait in my Google Ads?')">Clickbait policy</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('What content is prohibited in Google Ads?')">Prohibited content</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('Can I put a phone number in my ad text?')">Phone number in ads</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:7px 14px" onclick="fillQuery('What is the weather today?')">Out-of-scope (refusal)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DASHBOARD TAB ════════════════════════════════════ -->
+<div class="page" id="tab-dashboard">
+
+  <div class="metrics-grid" id="summaryCards">
+    <div class="metric-card">
+      <div class="label">Total Queries</div>
+      <div class="value blue" id="mTotalQueries">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Avg Latency</div>
+      <div class="value" id="mAvgLatency">—</div>
+      <div class="unit">milliseconds</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Refusal Rate</div>
+      <div class="value amber" id="mRefusalRate">—</div>
+      <div class="unit">of queries refused</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Avg Citations</div>
+      <div class="value green" id="mAvgCitations">—</div>
+      <div class="unit">per answered query</div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="card">
+      <div class="card-title">Retrieval Hit@K (Eval)</div>
+      <div class="chart-wrap"><canvas id="hitKChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Generation Accuracy (Eval)</div>
+      <div class="chart-wrap"><canvas id="genChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Query History</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Question</th>
+            <th>Outcome</th>
+            <th>Latency</th>
+            <th>Citations</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="5" class="empty-state"><div class="icon">📭</div>No queries yet — ask a question first!</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ EVALUATION TAB ═══════════════════════════════════ -->
+<div class="page" id="tab-evaluation">
+
+  <div class="card">
+    <div class="card-title">🧪 Evaluation Dataset</div>
+    <div class="eval-stat-row" id="evalStatRow">
+      <div class="eval-stat"><div class="ev" id="esTotalQ">—</div><div class="el">Total Questions</div></div>
+      <div class="eval-stat"><div class="ev" id="esAnswerable">—</div><div class="el">Answerable</div></div>
+      <div class="eval-stat"><div class="ev" id="esRefusal">—</div><div class="el">Refusal Expected</div></div>
     </div>
 
-    <script>
-        const form = document.getElementById('queryForm');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
-        const resultContent = document.getElementById('resultContent');
-        const submitBtn = document.getElementById('submitBtn');
+    <div style="display:flex;gap:12px;flex-wrap:wrap" id="catBadges"></div>
+  </div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+  <div class="card">
+    <div class="card-title">▶ Run Evaluation</div>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:16px">
+      Runs all 80 questions through the full RAG pipeline and computes retrieval,
+      generation, and latency metrics. This runs in the background — check status below.
+    </p>
+    <button class="btn btn-primary" id="runEvalBtn" style="width:auto;padding:10px 28px" onclick="startEval()">
+      Run Full Evaluation
+    </button>
+    <div class="progress-bar-wrap" id="evalProgressWrap" style="display:none">
+      <div class="progress-bar-fill" id="evalProgressFill" style="width:0%"></div>
+    </div>
+    <div class="eval-log" id="evalLog" style="display:none"></div>
+  </div>
 
-            const formData = new FormData(form);
-            const data = {
-                query: formData.get('query'),
-                limit: parseInt(formData.get('limit')),
-            };
+  <div class="card" id="evalResultsCard" style="display:none">
+    <div class="card-title">📈 Latest Results
+      <span class="badge badge-blue" id="evalRanAt" style="font-size:11px;margin-left:8px"></span>
+    </div>
 
-            submitBtn.disabled = true;
-            loading.classList.add('active');
-            result.classList.remove('active', 'refused');
+    <div class="results-grid" id="resultsGrid"></div>
 
-            try {
-                const response = await fetch('/query', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
+    <details style="margin-top:20px">
+      <summary style="cursor:pointer;font-size:13px;color:var(--sub);font-weight:500">
+        Per-question breakdown
+      </summary>
+      <div class="table-wrap" style="margin-top:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Type</th>
+              <th>Expected</th>
+              <th>Actual</th>
+              <th>Hit@1</th>
+              <th>Hit@5</th>
+              <th>MRR</th>
+              <th>Sim</th>
+              <th>Latency</th>
+            </tr>
+          </thead>
+          <tbody id="perQueryBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</div>
 
-                const responseData = await response.json();
+<script>
+// ── Utilities ────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const pct = (v) => v == null ? '—' : (v * 100).toFixed(1) + '%';
+const ms  = (v) => v == null ? '—' : v.toFixed(0) + ' ms';
+const f3  = (v) => v == null ? '—' : v.toFixed(3);
 
-                if (!response.ok) {
-                    throw new Error(responseData.detail || 'Request failed');
-                }
+function colorClass(v, good=0.7, warn=0.4) {
+  if (v == null) return '';
+  return v >= good ? 'good' : v >= warn ? 'warn' : 'bad';
+}
 
-                displayResult(responseData);
-            } catch (error) {
-                resultContent.innerHTML = `
-                    <div class="refusal-reason">
-                        Error: ${error.message}
-                    </div>
-                `;
-                result.classList.add('active', 'refused');
-            } finally {
-                loading.classList.remove('active');
-                submitBtn.disabled = false;
-            }
-        });
+// ── Tab switching ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    $('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'dashboard') loadDashboard();
+    if (btn.dataset.tab === 'evaluation') { loadEvalMeta(); loadEvalStatus(); }
+  });
+});
 
-        function displayResult(data) {
-            let html = '';
+// ── Health check ─────────────────────────────────────────────────────────────
+async function checkHealth() {
+  try {
+    const r = await fetch('/health');
+    const d = await r.json();
+    const set = (dotId, lblId, val) => {
+      const ok = val === 'connected';
+      const err = val.startsWith('error');
+      $(dotId).className = 'dot ' + (ok ? 'ok' : err ? 'err' : 'warn');
+      $(lblId).textContent = dotId.replace('dot','') + ': ' + (ok ? '✓' : val.slice(0,20));
+    };
+    set('dotDB',  'lblDB',  d.database);
+    set('dotVDB', 'lblVDB', d.vector_db);
+    set('dotLLM', 'lblLLM', d.llm);
+  } catch { /* ignore */ }
+}
+checkHealth();
+setInterval(checkHealth, 30000);
 
-            if (data.refused) {
-                result.classList.add('refused');
-                html += `
-                    <div class="refusal-reason">
-                        <strong>Request Refused:</strong><br>
-                        ${data.refusal_reason || 'No specific reason provided'}
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="answer">${escapeHtml(data.answer)}</div>
-                `;
+// ── Char counter ─────────────────────────────────────────────────────────────
+$('q').addEventListener('input', () => {
+  const n = $('q').value.length;
+  const cc = $('charCounter');
+  cc.textContent = n + ' / 500';
+  cc.className = 'char-counter' + (n > 450 ? ' warn' : '');
+});
 
-                if (data.citations && data.citations.length > 0) {
-                    html += '<div class="citations"><h3>Sources</h3>';
-                    data.citations.forEach((citation, index) => {
-                        console.log('Citation:', citation);
-                        html += `
-                            <div class="citation">
-                                <div class="citation-path">${index + 1}. ${escapeHtml(citation.policy_path)}</div>
-                                <div class="citation-url">`;
-                        
-                        if (citation.doc_url && citation.doc_url.startsWith('http')) {
-                            html += `<a href="${escapeHtml(citation.doc_url)}" target="_blank" rel="noopener noreferrer">
-                                        View Full Policy Document →
-                                    </a>`;
-                        } else {
-                            html += `<span style="color: #999;">Source: ${escapeHtml(citation.doc_id)}</span>`;
-                        }
-                        
-                        html += `</div>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
-                }
-            }
+// ── Fill example query ────────────────────────────────────────────────────────
+function fillQuery(text) {
+  $('q').value = text;
+  $('q').dispatchEvent(new Event('input'));
+  $('q').focus();
+  // Switch to query tab
+  document.querySelector('[data-tab="query"]').click();
+}
 
-            if (data.latency_ms || data.num_tokens_generated) {
-                html += '<div class="metrics">';
-                if (data.num_tokens_generated) {
-                    html += `
-                        <div class="metric">
-                            <span class="metric-label">Tokens:</span>
-                            <span>${data.num_tokens_generated}</span>
-                        </div>
-                    `;
-                }
-                html += '</div>';
-            }
+// ── Submit query ─────────────────────────────────────────────────────────────
+$('queryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const query = $('q').value.trim();
+  if (!query) return;
 
-            resultContent.innerHTML = html;
-            result.classList.add('active');
-        }
+  const limit       = parseInt($('limit').value);
+  const region      = $('region').value || undefined;
+  const content_type = $('content_type').value || undefined;
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-    </script>
+  const payload = { query, limit };
+  if (region)       payload.region = region;
+  if (content_type) payload.content_type = content_type;
+
+  $('submitBtn').disabled = true;
+  $('loading').classList.add('active');
+  $('answerCard').classList.remove('active');
+
+  try {
+    const res  = await fetch('/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Request failed');
+    renderAnswer(data);
+  } catch (err) {
+    renderError(err.message);
+  } finally {
+    $('loading').classList.remove('active');
+    $('submitBtn').disabled = false;
+  }
+});
+
+function renderAnswer(data) {
+  const card   = $('answerCard');
+  const header = $('answerHeader');
+  const body   = $('answerBody');
+  const mrow   = $('metricsRow');
+  const csect  = $('citationsSection');
+
+  card.classList.add('active');
+
+  if (data.refused) {
+    header.className = 'answer-header refused';
+    header.innerHTML = '<span style="font-size:18px">🚫</span> Request Refused <span class="badge badge-red">REFUSED</span>';
+    body.innerHTML = data.refusal_reason
+      ? `<div class="refusal-reason">⚠️ ${esc(data.refusal_reason)}</div>`
+      : '<div class="refusal-reason">This question could not be answered from the available policy documents.</div>';
+  } else {
+    header.className = 'answer-header ok';
+    header.innerHTML = '<span style="font-size:18px">✅</span> Policy Answer <span class="badge badge-green">ANSWERED</span>';
+    // Strip inline [SOURCE:...] tags for display
+    const clean = (data.answer || '').replace(/\[SOURCE:[^\]]+\]/g, '');
+    body.textContent = clean;
+  }
+
+  // Metrics row
+  const chips = [];
+  if (data.latency_ms != null) chips.push(`<div class="metric-chip">⏱ <strong>${data.latency_ms.toFixed(0)} ms</strong></div>`);
+  if (data.num_tokens_generated != null && !data.refused) chips.push(`<div class="metric-chip">🔤 <strong>${data.num_tokens_generated}</strong> tokens</div>`);
+  if (data.citations?.length) chips.push(`<div class="metric-chip">📚 <strong>${data.citations.length}</strong> source${data.citations.length > 1 ? 's' : ''}</div>`);
+  mrow.innerHTML = chips.join('');
+
+  // Citations
+  if (data.citations?.length && !data.refused) {
+    csect.innerHTML = '<div class="citations-title">📚 Sources</div>';
+    data.citations.forEach((c, i) => {
+      const hasUrl = c.doc_url && c.doc_url.startsWith('http');
+      const scorePct = c.score != null ? Math.round(c.score * 100) : null;
+      const scoreBar = scorePct != null
+        ? `<div class="score-bar-wrap">
+             <div class="score-bar-track"><div class="score-bar-fill" style="width:${scorePct}%"></div></div>
+             <span class="score-label">score ${c.score.toFixed(3)}</span>
+           </div>`
+        : '';
+      const hasChunk = c.chunk_text && c.chunk_text.trim().length > 0;
+      csect.innerHTML += `
+        <div class="citation-card">
+          <div class="citation-header" onclick="toggleChunk(this)">
+            <div class="citation-index">${i + 1}</div>
+            <div class="citation-meta">
+              <div class="citation-path">${esc(c.policy_path)}</div>
+              ${hasUrl ? `<a class="citation-url" href="${esc(c.doc_url)}" target="_blank" rel="noopener">View policy →</a>` : `<span style="font-size:11px;color:var(--sub)">${esc(c.doc_id)}</span>`}
+              ${scoreBar}
+            </div>
+            ${hasChunk ? `<button class="citation-expand-btn" title="Show chunk text">▼ chunk</button>` : ''}
+          </div>
+          ${hasChunk ? `<div class="citation-chunk">${esc(c.chunk_text)}</div>` : ''}
+        </div>`;
+    });
+  } else {
+    csect.innerHTML = '';
+  }
+}
+
+function renderError(msg) {
+  const card = $('answerCard');
+  card.classList.add('active');
+  $('answerHeader').className = 'answer-header refused';
+  $('answerHeader').innerHTML = '⚠️ Error';
+  $('answerBody').innerHTML = `<div class="refusal-reason">${esc(msg)}</div>`;
+  $('metricsRow').innerHTML = '';
+  $('citationsSection').innerHTML = '';
+}
+
+function toggleChunk(header) {
+  const chunk = header.nextElementSibling;
+  chunk.classList.toggle('open');
+  const btn = header.querySelector('.citation-expand-btn');
+  btn.textContent = chunk.classList.contains('open') ? '▲ chunk' : '▼ chunk';
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+let hitChart = null, genChart = null;
+
+async function loadDashboard() {
+  // Query history
+  try {
+    const res = await fetch('/history?limit=50');
+    const data = await res.json();
+    renderHistory(data.entries);
+    renderSummaryCards(data.entries);
+  } catch { /* ignore */ }
+
+  // Eval results for charts
+  try {
+    const res = await fetch('/eval/status');
+    const data = await res.json();
+    if (data.results?.aggregate) renderCharts(data.results.aggregate);
+  } catch { /* ignore */ }
+}
+
+function renderSummaryCards(entries) {
+  $('mTotalQueries').textContent = entries.length;
+  const lats = entries.filter(e => e.latency_ms).map(e => e.latency_ms);
+  $('mAvgLatency').textContent = lats.length ? (lats.reduce((a,b)=>a+b,0)/lats.length).toFixed(0) : '—';
+  const refused = entries.filter(e => e.refused).length;
+  $('mRefusalRate').textContent = entries.length ? pct(refused / entries.length) : '—';
+  const answered = entries.filter(e => !e.refused);
+  const cits = answered.filter(e => e.num_citations).map(e => e.num_citations);
+  $('mAvgCitations').textContent = cits.length ? (cits.reduce((a,b)=>a+b,0)/cits.length).toFixed(1) : '—';
+}
+
+function renderHistory(entries) {
+  const tbody = $('historyBody');
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="icon">📭</div>No queries yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = entries.map(e => {
+    const badge = e.refused
+      ? '<span class="badge badge-red">Refused</span>'
+      : '<span class="badge badge-green">Answered</span>';
+    return `<tr>
+      <td class="td-time">${e.ts ? e.ts.replace('T',' ').replace('Z','') : '—'}</td>
+      <td class="td-query" title="${esc(e.query)}">${esc(e.query)}</td>
+      <td>${badge}</td>
+      <td>${e.latency_ms ? e.latency_ms.toFixed(0)+' ms' : '—'}</td>
+      <td>${e.num_citations ?? '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCharts(agg) {
+  // Hit@K chart
+  if (hitChart) hitChart.destroy();
+  hitChart = new Chart($('hitKChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Hit@1', 'Hit@3', 'Hit@5', 'MRR'],
+      datasets: [{
+        label: 'Score',
+        data: [
+          agg.retrieval.hit_at_1,
+          agg.retrieval.hit_at_3,
+          agg.retrieval.hit_at_5,
+          agg.retrieval.mrr,
+        ],
+        backgroundColor: ['#1a73e8','#34a853','#fbbc04','#ea4335'],
+        borderRadius: 6,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 1, ticks: { callback: v => (v*100).toFixed(0)+'%' }, grid: { color: '#f0f0f0' } },
+        x: { grid: { display: false } },
+      },
+    },
+  });
+
+  // Gen accuracy chart
+  if (genChart) genChart.destroy();
+  const gen = agg.generation;
+  genChart = new Chart($('genChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Refusal Accuracy', 'Answer Accuracy', 'Faithfulness', 'Ans Similarity'],
+      datasets: [{
+        data: [gen.refusal_accuracy, gen.answer_accuracy, gen.avg_faithfulness, gen.avg_answer_semantic_similarity],
+        backgroundColor: ['#34a853','#1a73e8','#fbbc04','#ea4335'],
+        hoverOffset: 4,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } },
+    },
+  });
+}
+
+// ── Evaluation ────────────────────────────────────────────────────────────────
+async function loadEvalMeta() {
+  try {
+    const res = await fetch('/eval');
+    const data = await res.json();
+    $('esTotalQ').textContent    = data.total;
+    $('esAnswerable').textContent = data.answerable;
+    $('esRefusal').textContent   = data.refusal_expected;
+
+    const colors = { editorial:'blue', misrepresentation:'amber', prohibited:'red', restricted:'amber', overview:'green', out_of_scope:'red' };
+    $('catBadges').innerHTML = Object.entries(data.categories).map(([cat, n]) =>
+      `<span class="badge badge-${colors[cat]||'blue'}">${cat}: ${n}</span>`
+    ).join('');
+  } catch { /* ignore */ }
+}
+
+let _evalPoll = null;
+
+async function loadEvalStatus() {
+  try {
+    const res = await fetch('/eval/status');
+    const data = await res.json();
+    applyEvalStatus(data);
+  } catch { /* ignore */ }
+}
+
+function applyEvalStatus(data) {
+  const btn = $('runEvalBtn');
+  const bar = $('evalProgressWrap');
+  const fill = $('evalProgressFill');
+  const log = $('evalLog');
+  const resultsCard = $('evalResultsCard');
+
+  if (data.status === 'running') {
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+    bar.style.display = 'block';
+    log.style.display = 'block';
+    fill.style.width = (data.progress * 100).toFixed(0) + '%';
+    log.textContent = data.message || '';
+    if (!_evalPoll) _evalPoll = setInterval(pollEval, 2000);
+  } else if (data.status === 'complete') {
+    btn.disabled = false;
+    btn.textContent = 'Run Full Evaluation';
+    bar.style.display = 'none';
+    fill.style.width = '100%';
+    log.style.display = 'none';
+    clearInterval(_evalPoll); _evalPoll = null;
+    if (data.results?.aggregate) renderEvalResults(data.results);
+    tryLoadExistingResults();
+  } else if (data.status === 'error') {
+    btn.disabled = false;
+    btn.textContent = 'Retry Evaluation';
+    log.style.display = 'block';
+    log.textContent = '❌ ' + data.message;
+    clearInterval(_evalPoll); _evalPoll = null;
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Run Full Evaluation';
+    bar.style.display = 'none';
+    log.style.display = 'none';
+    resultsCard.style.display = 'none';
+  }
+}
+
+async function pollEval() {
+  const res = await fetch('/eval/status');
+  const data = await res.json();
+  applyEvalStatus(data);
+  if (data.results?.aggregate) loadDashboard();
+}
+
+async function startEval() {
+  $('runEvalBtn').disabled = true;
+  $('runEvalBtn').textContent = 'Starting…';
+  $('evalProgressWrap').style.display = 'block';
+  $('evalLog').style.display = 'block';
+  $('evalLog').textContent = 'Sending request…';
+  try {
+    const res = await fetch('/eval/run', { method: 'POST' });
+    const data = await res.json();
+    applyEvalStatus(data);
+  } catch (err) {
+    $('evalLog').textContent = '❌ ' + err.message;
+    $('runEvalBtn').disabled = false;
+    $('runEvalBtn').textContent = 'Run Full Evaluation';
+  }
+}
+
+function renderEvalResults(results) {
+  const agg = results.aggregate;
+  $('evalResultsCard').style.display = 'block';
+  $('evalRanAt').textContent = results.ran_at ? results.ran_at.replace('T',' ').replace('Z','') : '';
+
+  const ret = agg.retrieval;
+  const gen = agg.generation;
+  const lat = agg.latency;
+
+  $('resultsGrid').innerHTML = `
+    <div class="result-metric">
+      <div class="rm-label">📍 Retrieval</div>
+      <div class="rm-row"><span class="rk">Hit@1</span><span class="rv ${colorClass(ret.hit_at_1)}">${pct(ret.hit_at_1)}</span></div>
+      <div class="rm-row"><span class="rk">Hit@3</span><span class="rv ${colorClass(ret.hit_at_3)}">${pct(ret.hit_at_3)}</span></div>
+      <div class="rm-row"><span class="rk">Hit@5</span><span class="rv ${colorClass(ret.hit_at_5)}">${pct(ret.hit_at_5)}</span></div>
+      <div class="rm-row"><span class="rk">MRR</span><span class="rv ${colorClass(ret.mrr)}">${f3(ret.mrr)}</span></div>
+    </div>
+    <div class="result-metric">
+      <div class="rm-label">🤖 Generation</div>
+      <div class="rm-row"><span class="rk">Refusal Accuracy</span><span class="rv ${colorClass(gen.refusal_accuracy)}">${pct(gen.refusal_accuracy)}</span></div>
+      <div class="rm-row"><span class="rk">Answer Accuracy</span><span class="rv ${colorClass(gen.answer_accuracy)}">${pct(gen.answer_accuracy)}</span></div>
+      <div class="rm-row"><span class="rk">False Refusal Rate</span><span class="rv ${colorClass(1-gen.false_refusal_rate)}">${pct(gen.false_refusal_rate)}</span></div>
+      <div class="rm-row"><span class="rk">False Answer Rate</span><span class="rv ${colorClass(1-gen.false_answer_rate)}">${pct(gen.false_answer_rate)}</span></div>
+    </div>
+    <div class="result-metric">
+      <div class="rm-label">📊 Quality</div>
+      <div class="rm-row"><span class="rk">Ans Semantic Similarity</span><span class="rv ${colorClass(gen.avg_answer_semantic_similarity, 0.6, 0.3)}">${f3(gen.avg_answer_semantic_similarity)}</span></div>
+      <div class="rm-row"><span class="rk">Faithfulness</span><span class="rv ${colorClass(gen.avg_faithfulness, 0.6, 0.3)}">${f3(gen.avg_faithfulness)}</span></div>
+    </div>
+    <div class="result-metric">
+      <div class="rm-label">⏱ Latency</div>
+      <div class="rm-row"><span class="rk">Average</span><span class="rv">${ms(lat.avg_ms)}</span></div>
+      <div class="rm-row"><span class="rk">P50</span><span class="rv">${ms(lat.p50_ms)}</span></div>
+      <div class="rm-row"><span class="rk">P95</span><span class="rv">${ms(lat.p95_ms)}</span></div>
+    </div>`;
+}
+
+function renderPerQuery(perQuery) {
+  $('perQueryBody').innerHTML = perQuery.map((r, i) => {
+    const exp = r.expected_refused ? '<span class="badge badge-red">Refuse</span>' : '<span class="badge badge-green">Answer</span>';
+    const act = r.actual_refused   ? '<span class="badge badge-red">Refused</span>' : '<span class="badge badge-green">Answered</span>';
+    const correct = r.expected_refused === r.actual_refused;
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="td-query" title="${esc(r.question)}">${esc(r.question)}</td>
+      <td><span class="badge badge-blue" style="font-size:10px">${esc(r.question_type)}</span></td>
+      <td>${exp}</td>
+      <td>${act} ${correct ? '' : '⚠️'}</td>
+      <td class="${r.hit_at_1 ? 'pq-pass' : 'pq-fail'}">${r.hit_at_1 == null ? '—' : r.hit_at_1 ? '✓' : '✗'}</td>
+      <td class="${r.hit_at_5 ? 'pq-pass' : 'pq-fail'}">${r.hit_at_5 == null ? '—' : r.hit_at_5 ? '✓' : '✗'}</td>
+      <td>${r.mrr == null ? '—' : r.mrr.toFixed(2)}</td>
+      <td>${r.answer_similarity == null ? '—' : r.answer_similarity.toFixed(2)}</td>
+      <td>${r.latency_ms ? r.latency_ms.toFixed(0)+'ms' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Also try to load existing results on eval tab open
+async function tryLoadExistingResults() {
+  try {
+    const res = await fetch('/eval/results');
+    if (res.ok) {
+      const data = await res.json();
+      renderEvalResults({ aggregate: data.aggregate, ran_at: data.ran_at, num_items: data.num_items });
+      if (data.per_query) renderPerQuery(data.per_query);
+    }
+  } catch { /* no prior results */ }
+}
+
+// Augment loadEvalStatus
+const _origLoadEvalStatus = loadEvalStatus;
+async function loadEvalStatusFull() {
+  await _origLoadEvalStatus();
+  await tryLoadExistingResults();
+}
+// Override tab click for eval
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  if (btn.dataset.tab === 'evaluation') {
+    const existing = btn.onclick;
+    btn.addEventListener('click', () => {
+      tryLoadExistingResults();
+    });
+  }
+});
+</script>
 </body>
 </html>

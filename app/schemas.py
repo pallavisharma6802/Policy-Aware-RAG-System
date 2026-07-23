@@ -8,13 +8,17 @@ class Citation:
     policy_path: str
     doc_id: str
     doc_url: str
-    
+    score: float = 0.0
+    chunk_text: str = ""
+
     def to_dict(self) -> Dict:
         return {
             "chunk_id": self.chunk_id,
             "policy_path": self.policy_path,
             "doc_id": self.doc_id,
-            "doc_url": self.doc_url
+            "doc_url": self.doc_url,
+            "score": self.score,
+            "chunk_text": self.chunk_text,
         }
 
 

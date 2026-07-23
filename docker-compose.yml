@@ -31,7 +31,6 @@ services:
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
       PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
       DEFAULT_VECTORIZER_MODULE: 'none'
-      CLUSTER_HOSTNAME: 'weaviate'
     ports:
       - "8080:8080"
     volumes:

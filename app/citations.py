@@ -30,7 +30,9 @@ def build_citations(cited_ids: Set[str], results: List[Dict]) -> List[Citation]:
                 chunk_id=chunk_id,
                 policy_path=chunk["policy_path"],
                 doc_id=chunk["doc_id"],
-                doc_url=chunk.get("doc_url", "")
+                doc_url=chunk.get("doc_url", ""),
+                score=round(chunk.get("score", 0.0), 4),
+                chunk_text=chunk.get("chunk_text", ""),
             ))
-    
+
     return citations

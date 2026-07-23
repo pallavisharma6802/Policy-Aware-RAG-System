@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 
 class QueryRequest(BaseModel):
@@ -11,7 +11,7 @@ class QueryRequest(BaseModel):
         examples=["Can I advertise alcohol?"]
     )
     limit: int = Field(
-        default=5,
+        default=3,
         ge=1,
         le=20,
         description="Maximum number of policy chunks to retrieve"
@@ -35,6 +35,8 @@ class CitationResponse(BaseModel):
     policy_path: str = Field(description="Human-readable policy hierarchy path")
     doc_id: str = Field(description="Source document identifier")
     doc_url: str = Field(description="URL to the source policy document")
+    score: Optional[float] = Field(default=None, description="Retrieval relevance score (0–1)")
+    chunk_text: Optional[str] = Field(default=None, description="Raw text of the retrieved chunk")
 
 
 class QueryResponse(BaseModel):
@@ -63,3 +65,34 @@ class HealthResponse(BaseModel):
     database: str = Field(description="PostgreSQL connection status")
     vector_db: str = Field(description="Weaviate connection status")
     llm: str = Field(description="Ollama service status")
+
+
+# ── Evaluation / metrics models ───────────────────────────────────────────────
+
+class EvalSetMeta(BaseModel):
+    total: int
+    answerable: int
+    refusal_expected: int
+    categories: Dict[str, int]
+    question_types: Dict[str, int]
+
+
+class EvalStatusResponse(BaseModel):
+    status: str = Field(description="idle | running | complete | error")
+    progress: float = Field(default=0.0, description="0.0 – 1.0")
+    message: str = Field(default="")
+    results: Optional[Dict[str, Any]] = Field(default=None)
+
+
+class QueryLogEntry(BaseModel):
+    ts: str
+    query: str
+    refused: bool
+    latency_ms: Optional[float]
+    num_citations: int
+    num_tokens_generated: Optional[int]
+
+
+class QueryHistoryResponse(BaseModel):
+    entries: List[QueryLogEntry]
+    total: int

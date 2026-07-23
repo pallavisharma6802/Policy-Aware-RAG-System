@@ -89,15 +89,21 @@ def extract_sections(content: str) -> List[Dict]:
     
     return sections
 
+BOILERPLATE_PATTERN = re.compile(r'\s*Learn more about the.*?policy\.\s*', re.IGNORECASE)
+
+def strip_boilerplate(text: str) -> str:
+    """Removes the 'Learn more about the <X> policy.' CTA link caption left over from scraping."""
+    return BOILERPLATE_PATTERN.sub(' ', text).strip()
+
 def create_chunks(sections: List[Dict], metadata: Dict, max_tokens: int = 500) -> List[Dict]:
     chunks = []
     chunk_index = 0
-    
+
     versioned_doc_id = f"{metadata['doc_id']}_{metadata['downloaded_at'][:10]}"
-    
+
     for section in sections:
-        text = section['text']
-        
+        text = strip_boilerplate(section['text'])
+
         if not text or len(text.strip()) < 20:
             continue
         

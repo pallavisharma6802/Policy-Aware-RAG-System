@@ -55,7 +55,7 @@ class RetrievalResult:
 class HybridRetriever:
     def __init__(self, model_name: str = EMBEDDING_MODEL):
         self.model = SentenceTransformer(model_name)
-        self.weaviate_client = weaviate.Client(url=WEAVIATE_URL)
+        self.weaviate_client = weaviate.Client(url=WEAVIATE_URL, timeout_config=(5, 30))
     
     def vector_search(
         self,
@@ -114,7 +114,7 @@ class HybridRetriever:
     def retrieve(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = 3,
         region: Optional[str] = None,
         content_type: Optional[str] = None,
         policy_source: Optional[str] = None,
@@ -194,7 +194,7 @@ class HybridRetriever:
 
 def retrieve_policy_chunks(
     query: str,
-    limit: int = 5,
+    limit: int = 3,
     region: Optional[str] = None,
     content_type: Optional[str] = None,
     policy_source: Optional[str] = None,
