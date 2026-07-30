@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Policy-Aware RAG — Google Ads</title>
+  <title>Policy-Aware RAG</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -30,8 +30,6 @@
       color: var(--text);
       min-height: 100vh;
     }
-
-    /* ── Header ── */
     header {
       background: var(--card);
       border-bottom: 1px solid var(--border);
@@ -91,8 +89,6 @@
     .dot.ok  { background: var(--green); }
     .dot.err { background: var(--red);   }
     .dot.warn{ background: var(--amber); }
-
-    /* ── Tabs ── */
     .tabs {
       background: var(--card);
       border-bottom: 1px solid var(--border);
@@ -119,12 +115,8 @@
       color: var(--blue);
       border-bottom-color: var(--blue);
     }
-
-    /* ── Layout ── */
     .page { display: none; padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
     .page.active { display: block; }
-
-    /* ── Cards ── */
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -142,8 +134,6 @@
       align-items: center;
       gap: 8px;
     }
-
-    /* ── Form ── */
     .form-group { margin-bottom: 16px; }
 
     label {
@@ -211,8 +201,6 @@
     }
     .btn-outline:hover { background: #e8f0fe; }
     .btn-outline:disabled { color: var(--sub); border-color: var(--border); cursor: not-allowed; }
-
-    /* ── Loading ── */
     .spinner {
       width: 20px; height: 20px;
       border: 2px solid #c5cae9;
@@ -231,8 +219,6 @@
       font-size: 14px;
     }
     .loading-overlay.active { display: flex; }
-
-    /* ── Answer block ── */
     .answer-card {
       display: none;
       border-radius: var(--radius);
@@ -285,8 +271,6 @@
       color: #7a4f00;
       margin-bottom: 16px;
     }
-
-    /* ── Metrics row ── */
     .metrics-row {
       display: flex;
       gap: 16px;
@@ -302,8 +286,6 @@
       color: var(--sub);
     }
     .metric-chip strong { color: var(--text); }
-
-    /* ── Citations ── */
     .citations-section { margin-top: 16px; }
     .citations-title { font-size: 13px; font-weight: 600; color: var(--sub); margin-bottom: 10px; }
 
@@ -396,8 +378,6 @@
       overflow-y: auto;
     }
     .citation-chunk.open { display: block; }
-
-    /* ── Dashboard ── */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -429,8 +409,6 @@
     }
 
     .chart-wrap { position: relative; height: 220px; }
-
-    /* ── History table ── */
     .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
@@ -464,8 +442,6 @@
       font-size: 14px;
     }
     .empty-state .icon { font-size: 32px; margin-bottom: 10px; }
-
-    /* ── Eval tab ── */
     .eval-stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -527,12 +503,8 @@
       overflow-y: auto;
       margin-top: 8px;
     }
-
-    /* ── Per-query results table ── */
     .pq-pass { color: var(--green); }
     .pq-fail { color: var(--red);   }
-
-    /* ── Responsive ── */
     @media (max-width: 768px) {
       .metrics-grid  { grid-template-columns: repeat(2, 1fr); }
       .charts-grid   { grid-template-columns: 1fr; }
@@ -543,8 +515,6 @@
   </style>
 </head>
 <body>
-
-<!-- ── Header ─────────────────────────────────────────────────────────────── -->
 <header>
   <div class="logo">
     <div class="logo-icon">⚖</div>
@@ -556,15 +526,11 @@
     <div class="status-pill"><div class="dot" id="dotLLM"></div><span id="lblLLM">LLM</span></div>
   </div>
 </header>
-
-<!-- ── Tabs ───────────────────────────────────────────────────────────────── -->
 <div class="tabs">
   <button class="tab-btn active" data-tab="query">🔍 Query</button>
   <button class="tab-btn" data-tab="dashboard">📊 Dashboard</button>
   <button class="tab-btn" data-tab="evaluation">🧪 Evaluation</button>
 </div>
-
-<!-- ═══════════════════════ QUERY TAB ════════════════════════════════════════ -->
 <div class="page active" id="tab-query">
 
   <div class="card">
@@ -645,8 +611,6 @@
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════════ DASHBOARD TAB ════════════════════════════════════ -->
 <div class="page" id="tab-dashboard">
 
   <div class="metrics-grid" id="summaryCards">
@@ -702,8 +666,6 @@
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════════ EVALUATION TAB ═══════════════════════════════════ -->
 <div class="page" id="tab-evaluation">
 
   <div class="card">
@@ -767,7 +729,6 @@
 </div>
 
 <script>
-// ── Utilities ────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const pct = (v) => v == null ? '—' : (v * 100).toFixed(1) + '%';
@@ -778,8 +739,6 @@ function colorClass(v, good=0.7, warn=0.4) {
   if (v == null) return '';
   return v >= good ? 'good' : v >= warn ? 'warn' : 'bad';
 }
-
-// ── Tab switching ─────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -790,8 +749,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     if (btn.dataset.tab === 'evaluation') { loadEvalMeta(); loadEvalStatus(); }
   });
 });
-
-// ── Health check ─────────────────────────────────────────────────────────────
 async function checkHealth() {
   try {
     const r = await fetch('/health');
@@ -809,16 +766,12 @@ async function checkHealth() {
 }
 checkHealth();
 setInterval(checkHealth, 30000);
-
-// ── Char counter ─────────────────────────────────────────────────────────────
 $('q').addEventListener('input', () => {
   const n = $('q').value.length;
   const cc = $('charCounter');
   cc.textContent = n + ' / 500';
   cc.className = 'char-counter' + (n > 450 ? ' warn' : '');
 });
-
-// ── Fill example query ────────────────────────────────────────────────────────
 function fillQuery(text) {
   $('q').value = text;
   $('q').dispatchEvent(new Event('input'));
@@ -826,8 +779,6 @@ function fillQuery(text) {
   // Switch to query tab
   document.querySelector('[data-tab="query"]').click();
 }
-
-// ── Submit query ─────────────────────────────────────────────────────────────
 $('queryForm').addEventListener('submit', async e => {
   e.preventDefault();
   const query = $('q').value.trim();
@@ -940,8 +891,6 @@ function toggleChunk(header) {
   const btn = header.querySelector('.citation-expand-btn');
   btn.textContent = chunk.classList.contains('open') ? '▲ chunk' : '▼ chunk';
 }
-
-// ── Dashboard ─────────────────────────────────────────────────────────────────
 let hitChart = null, genChart = null;
 
 async function loadDashboard() {
@@ -1040,8 +989,6 @@ function renderCharts(agg) {
     },
   });
 }
-
-// ── Evaluation ────────────────────────────────────────────────────────────────
 async function loadEvalMeta() {
   try {
     const res = await fetch('/eval');

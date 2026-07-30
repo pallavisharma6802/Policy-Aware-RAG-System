@@ -5,25 +5,13 @@ from pathlib import Path
 from typing import List, Dict
 
 def get_policy_url(section_name: str, metadata: Dict) -> str:
-    """
-    Returns the specific policy URL for a section from metadata,
-    otherwise returns the default document URL.
-    
-    First checks exact match, then checks if section name is contained in any key.
-    """
     section_urls = metadata.get('section_urls', {})
-    
-    # Try exact match first
     if section_name in section_urls:
         return section_urls[section_name]
-    
-    # Try partial match (case-insensitive)
     section_lower = section_name.lower()
     for key, url in section_urls.items():
         if section_lower in key.lower() or key.lower() in section_lower:
             return url
-    
-    # Fall back to document URL
     return metadata['url']
 
 def load_markdown_file(filepath: Path) -> str:
@@ -92,7 +80,6 @@ def extract_sections(content: str) -> List[Dict]:
 BOILERPLATE_PATTERN = re.compile(r'\s*Learn more about the.*?policy\.\s*', re.IGNORECASE)
 
 def strip_boilerplate(text: str) -> str:
-    """Removes the 'Learn more about the <X> policy.' CTA link caption left over from scraping."""
     return BOILERPLATE_PATTERN.sub(' ', text).strip()
 
 def create_chunks(sections: List[Dict], metadata: Dict, max_tokens: int = 500) -> List[Dict]:
@@ -110,7 +97,6 @@ def create_chunks(sections: List[Dict], metadata: Dict, max_tokens: int = 500) -
         hierarchy_text = ' > '.join(filter(None, section['hierarchy']))
         chunk_text = f"[{hierarchy_text}]\n\n{text}"
         
-        # Get section-specific URL from metadata or fall back to document URL
         section_url = get_policy_url(section['section'], metadata)
         
         estimated_tokens = len(chunk_text.split()) / 0.75

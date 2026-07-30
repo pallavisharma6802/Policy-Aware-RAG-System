@@ -29,22 +29,29 @@ class PolicyResponse:
     citations: List[Citation] = field(default_factory=list)
     refusal_reason: Optional[str] = None
     latency_ms: Optional[float] = None
+    retrieval_ms: Optional[float] = None
+    generation_ms: Optional[float] = None
     num_tokens_generated: Optional[int] = None
-    
+    model: Optional[str] = None
+
     def to_dict(self) -> Dict:
         response = {
             "answer": self.answer,
             "refused": self.refused,
-            "citations": [c.to_dict() for c in self.citations]
+            "citations": [c.to_dict() for c in self.citations],
         }
-        
+
         if self.refusal_reason:
             response["refusal_reason"] = self.refusal_reason
-        
         if self.latency_ms is not None:
             response["latency_ms"] = self.latency_ms
-        
+        if self.retrieval_ms is not None:
+            response["retrieval_ms"] = self.retrieval_ms
+        if self.generation_ms is not None:
+            response["generation_ms"] = self.generation_ms
         if self.num_tokens_generated is not None:
             response["num_tokens_generated"] = self.num_tokens_generated
-        
+        if self.model is not None:
+            response["model"] = self.model
+
         return response

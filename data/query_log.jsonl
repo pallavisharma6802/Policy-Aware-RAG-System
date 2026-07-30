@@ -1,2 +1,2 @@
-{"ts": "2026-07-22T05:00:12Z", "query": "Can I advertise alcohol on Google Ads?", "refused": false, "latency_ms": 190620.31197547913, "num_citations": 1, "num_tokens_generated": 37}
-{"ts": "2026-07-22T05:17:51Z", "query": "Can i advertise alcohol?", "refused": false, "latency_ms": 214529.1337966919, "num_citations": 1, "num_tokens_generated": 36}
+{"ts": "2026-07-30T17:25:16Z", "query": "Can I advertise alcohol?", "refused": false, "latency_ms": 120.0, "retrieval_ms": 20.0, "generation_ms": 100.0, "num_citations": 1, "num_tokens_generated": 12, "model": "mock"}
+{"ts": "2026-07-30T17:25:16Z", "query": "totally unrelated quantum ads", "refused": true, "latency_ms": 15.0, "retrieval_ms": 15.0, "generation_ms": 0.0, "num_citations": 0, "num_tokens_generated": null, "model": "mock"}

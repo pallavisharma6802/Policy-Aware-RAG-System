@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: policy-rag-postgres
@@ -22,7 +21,6 @@ services:
       - policy-rag-network
     restart: unless-stopped
 
-  # Weaviate Vector Database
   weaviate:
     image: semitechnologies/weaviate:1.23.0
     container_name: policy-rag-weaviate
@@ -44,8 +42,9 @@ services:
       - policy-rag-network
     restart: unless-stopped
 
-  # Ollama LLM Service
+  # docker compose --profile bundled-ollama up -d
   ollama:
+    profiles: ["bundled-ollama"]
     image: ollama/ollama:latest
     container_name: policy-rag-ollama
     ports:
@@ -60,37 +59,21 @@ services:
     networks:
       - policy-rag-network
     restart: unless-stopped
-    # Uncomment for GPU support (requires nvidia-docker)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
 
-  # FastAPI Application
   fastapi:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: policy-rag-api
     environment:
-      # Database configuration
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-policy_rag}
       POSTGRES_USER: ${POSTGRES_USER:-policy_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-policy_pass}
-      
-      # Weaviate configuration
       WEAVIATE_URL: http://weaviate:8080
-      
-      # Ollama configuration
-      OLLAMA_HOST: http://ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
-      
-      # Application settings
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:1.7b}
       PYTHONUNBUFFERED: 1
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
@@ -98,12 +81,12 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
       weaviate:
-        condition: service_healthy
-      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

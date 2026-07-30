@@ -7,7 +7,17 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+.claude/
+.coverage
+htmlcov/
 models/*.gguf
+logs/
+
+# Regenerable / runtime data
 data/raw_docs/*.html
 data/raw_docs/*.md
 data/processed_chunks/*.json
+data/query_log.jsonl
+data/eval/eval_results.json
+data/eval/eval_status.json
+data/analytics/

@@ -102,7 +102,6 @@ def extract_metadata(soup, url, platform, category):
     if h1_tag and not metadata["title"]:
         metadata["title"] = h1_tag.get_text(strip=True)
     
-    # Extract section hierarchy and their associated URLs
     for header in soup.find_all(['h1', 'h2', 'h3', 'h4']):
         section_text = header.get_text(strip=True)
         if section_text:
@@ -110,31 +109,24 @@ def extract_metadata(soup, url, platform, category):
                 "section": section_text,
                 "policy_level": header.name.upper()
             })
-            
-            # Look for a link near the header that points to a specific policy page
-            # Check if header itself contains a link
+
             link = header.find('a', href=True)
             if not link:
-                # Check next sibling elements for links
                 next_elem = header.find_next_sibling()
                 if next_elem:
                     link = next_elem.find('a', href=True)
-            
-            # Also check for "Learn more" or similar links in following paragraphs
+
             if not link:
-                # Look in the next few elements for policy links
                 current = header.find_next()
                 search_limit = 3
                 while current and search_limit > 0:
                     if current.name in ['h1', 'h2', 'h3', 'h4']:
-                        break  # Stop at next header
-                    
+                        break
+
                     links = current.find_all('a', href=True) if hasattr(current, 'find_all') else []
                     for l in links:
                         href = l.get('href', '')
-                        # Look for policy-specific links (not general help center)
                         if 'adspolicy/answer/' in href and 'answer_' not in href:
-                            # Convert relative URLs to absolute
                             if href.startswith('http'):
                                 link = l
                             elif href.startswith('/'):
@@ -142,16 +134,14 @@ def extract_metadata(soup, url, platform, category):
                                 href = f"https://support.google.com{href}"
                                 l['href'] = href
                             break
-                    
+
                     if link:
                         break
                     current = current.find_next()
                     search_limit -= 1
-            
-            # Store the URL if found
+
             if link and link.get('href'):
                 href = link.get('href')
-                # Clean up URL (remove query params like ?sjid=...)
                 if '?' in href:
                     href = href.split('?')[0]
                 if 'adspolicy/answer/' in href:

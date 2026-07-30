@@ -1,73 +1,57 @@
-# Policy-Aware RAG System for Ads & Content Moderation
+# Policy-Aware RAG
 
-A production-ready RAG system that answers Google Ads policy questions using hybrid search, local LLM inference, and citation-backed responses — with explicit refusal logic to prevent hallucinations.
-> 90 tests passing · Hybrid semantic + metadata retrieval · Zero hallucination guarantee via explicit refusal
+Answers Google Ads policy questions with retrieved sources and citations. Refuses when the corpus doesn’t support an answer.
 
-## Tech Stack
+## Architecture
 
-| Layer | Tools |
+```
+Policy docs → chunk → Postgres (metadata) + Weaviate (vectors)
+                              ↓
+Query → hybrid retrieve (k=3) → Ollama (qwen3:1.7b) → cite / refuse
+                              ↓
+                    JSONL logs → optional Databricks Delta + MLflow
+```
+
+| Piece | What |
 |---|---|
-| Vector Search | Weaviate 1.23 (semantic) + PostgreSQL 15 (metadata filtering) |
-| Embeddings | all-MiniLM-L6-v2 (384-dim) |
-| LLM | Ollama + Qwen3 4B (~2.5GB, local inference) |
-| API | FastAPI + Uvicorn |
-| Orchestration | LangChain |
-| Infrastructure | Docker Compose (4-service stack) |
+| Corpus | 5 Google Ads policy pages → 67 chunks |
+| Retrieve | MiniLM embeddings, Weaviate near-vector, Postgres filters, H2/H3 rerank |
+| Generate | Local Ollama; `[SOURCE:N]` citations validated against retrieved chunks |
+| API / UI | FastAPI on `:8000` (query, history, eval) |
+| Eval | `data/eval/eval_set.json` (80 Qs); `python -m scripts.run_evaluation [--smoke]` |
+| Databricks | Optional: sync events, eval runs, and chunks to Delta (`dbx/`) |
 
-## How It Works
-```
-Query → Hybrid retrieval (Weaviate + PostgreSQL) → Qwen3 generation → Citation extraction → Response
-                                                         ↓
-                                           Refusal if sources insufficient
-```
+## Run
 
-**Key design decisions:**
-- Hybrid retrieval: vector similarity + SQL metadata filters for precision
-- Refusal logic: explicitly declines when retrieved chunks don't support an answer
-- Section-specific URLs auto-extracted from policy docs (no hardcoding)
-- Full audit trail: every response includes chunk IDs, policy paths, and source URLs
-
-## Sample Response
-```json
-{
-  "answer": "Alcohol advertising is allowed but requires certification...",
-  "refused": false,
-  "citations": [{
-    "chunk_id": "google_ads_overview_chunk_005",
-    "policy_path": "Prohibited Content > Alcohol",
-    "doc_url": "https://support.google.com/adspolicy/answer/6012382"
-  }],
-  "latency_ms": 2543.2,
-  "num_tokens_generated": 87
-}
-```
-
-Refusal example (by design): "What products are allowed to advertise?" — policies describe restrictions not allowances, so the system refuses rather than guessing.
-
-## Quick Start
 ```bash
 cp .env.docker .env
-docker-compose up -d
-# First run: 5-10 min to pull Qwen3 4B
-# App at http://localhost:8000 | Docs at http://localhost:8000/docs
+ollama pull qwen3:1.7b
+docker compose up -d
+# http://localhost:8000
 ```
 
-Startup sequence is fully automated: waits for all services, pulls model if missing, runs ingestion pipeline, then starts the server.
-
-## Tests
-
-90 tests, 100% passing across retrieval, generation guardrails, API, edge cases, and integration.
 ```bash
-pytest tests/ -v
-pytest tests/ --cov --cov-report=html
+pytest tests/ -q
+python -m scripts.run_evaluation --smoke
 ```
 
-## Project Structure
+## Databricks (optional)
+
+```bash
+pip install -r requirements-databricks.txt
+# set DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_HTTP_PATH in .env
+python -m scripts.sync_databricks all
 ```
-├── ingestion/       # load_docs → chunk → embed pipeline
-├── app/             # retrieval, generation, citations, schemas
-├── api/             # FastAPI routes + vanilla HTML/CSS/JS UI
-├── db/              # SQLAlchemy models + session
-├── tests/           # 90 tests across 9 files
-└── docker-compose.yml
+
+## Layout
+
+```
+app/          retrieval, generation, citations, metrics, analytics
+api/          FastAPI + UI
+ingestion/    scrape → chunk → Postgres → Weaviate
+db/           SQLAlchemy models
+dbx/          Databricks sync
+scripts/      eval + Databricks CLI
+data/eval/    golden set
+tests/
 ```
